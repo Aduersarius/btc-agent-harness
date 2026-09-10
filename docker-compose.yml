@@ -1,0 +1,30 @@
+# Local / docs only. Unit tests mock JSON-RPC and never start this stack.
+# Network: Bitcoin Core regtest. No mainnet. No wallet signing in CI.
+#
+#   docker compose up -d
+#   bitcoin-cli -regtest -rpcuser=btcagent -rpcpassword=regtest-only getblockchaininfo
+#
+# Tear down: docker compose down -v
+
+services:
+  bitcoind:
+    image: bitcoin/bitcoin:27.1
+    restart: unless-stopped
+    command:
+      - -regtest=1
+      - -server=1
+      - -txindex=1
+      - -disablewallet=0
+      - -rpcuser=btcagent
+      - -rpcpassword=regtest-only
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -fallbackfee=0.0002
+    ports:
+      - "18443:18443"
+      - "18444:18444"
+    volumes:
+      - bitcoind-regtest:/home/bitcoin/.bitcoin
+
+volumes:
+  bitcoind-regtest:
